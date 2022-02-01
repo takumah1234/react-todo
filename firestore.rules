@@ -1,0 +1,25 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+  	function isLogin(){
+    	return request.auth != null;
+    }
+    
+    function matchUserId(userId){
+    	return isLogin() && request.auth.uid == userId;
+    }
+  
+    match /users/{userId} {
+      allow read: if matchUserId(userId);
+    }
+    
+    match /todos/{todoId} {
+    	allow read, write: if isLogin();
+    }
+    
+    match /Order/{orderId} {
+    	allow read, write: if isLogin();
+    }
+  }
+}
